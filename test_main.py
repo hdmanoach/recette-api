@@ -10,7 +10,7 @@ def test_bienvenue():
 
 def test_get_recipes():
     response = client.get("/recipes")
-    assert response.status_code == 200
+    assert response.status_code == 201
     assert response.json() == {"recipes": []}
 
 def test_get_recipe():
