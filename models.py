@@ -11,6 +11,7 @@
 """
 from pydantic import BaseModel
 
+
 class Recipe(BaseModel):
     id: int
     title: str

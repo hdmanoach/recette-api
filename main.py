@@ -1,6 +1,7 @@
 from fastapi import FastAPI, HTTPException
 
 from models import Recipe
+
 app = FastAPI()
 recipes = []  # Liste pour stocker les recettes
 @app.get("/")

@@ -1,4 +1,5 @@
 from fastapi.testclient import TestClient
+
 from main import app
 
 client = TestClient(app)
@@ -19,6 +20,6 @@ def test_get_recipe():
     assert response.json() == {"detail": "Recette introuvable"}
 
 def test_create_recipe():
-    recipe = recipe = {"id": 100, "title": "Test Recipe", "ingredients": ["Ingredient 1", "Ingredient 2"], "instructions": ["Instruction 1", "Instruction 2"], "prep_time": 30, "servings": 4}
+    recipe = {"id": 100, "title": "Test Recipe", "ingredients": ["Ingredient 1", "Ingredient 2"], "instructions": ["Instruction 1", "Instruction 2"], "prep_time": 30, "servings": 4}
     response = client.post("/recipes", json=recipe)
     assert response.status_code == 200
