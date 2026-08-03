@@ -11,14 +11,14 @@ Une API REST simple pour gérer des recettes de cuisine, construite avec FastAPI
 
 ## Installation
 
-\`\`\`bash
+```bash
 git clone https://github.com/hdmanoach/recette-api.git
 cd recette-api
 python3 -m venv venv
 source venv/bin/activate
 pip install -r requirements.txt
 uvicorn main:app --reload
-\`\`\`
+```
 
 ## Auteur
 
