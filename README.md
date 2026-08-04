@@ -4,6 +4,9 @@
 
 Une API REST simple pour gérer des recettes de cuisine, construite avec FastAPI.
 
+🔗 **Démo en ligne** : https://recette-api-l2r6.onrender.com/docs
+
+⚠️ Les données sont réinitialisées à chaque redéploiement (pas de disque persistant sur le plan gratuit).
 ## Fonctionnalités
 
 - CRUD complet sur les recettes (Create, Read, Update, Delete)
