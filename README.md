@@ -67,7 +67,21 @@ recette-api/
 ├── pyproject.toml # Configuration de Ruff
 └── .github/workflows/ci.yml # Pipeline CI/CD
 ```
+## Lancer avec Docker
 
+### Build de l'image
+
+```bash
+docker build -t recette-api .
+```
+
+### Lancer le conteneur (avec persistance des données)
+
+```bash
+docker run -p 8000:8000 -v $(pwd)/data:/app/data recette-api
+```
+
+L'API est accessible sur `http://127.0.0.1:8000`
 ## Auteur
 
 **Manoach HOSSOU DODO** — [LinkedIn](https://www.linkedin.com/in/hdmanoach/)
