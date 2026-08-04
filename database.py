@@ -5,9 +5,12 @@ SessionLocal → une "usine" à sessions — chaque requête API va ouvrir sa pr
 Base → la classe dont hériteront tes futurs modèles de table (RecipeDB)
 """
 from sqlalchemy import create_engine
-from sqlalchemy.orm import declarative_base, sessionmaker
+from sqlalchemy.orm import sessionmaker, declarative_base
+import os
 
-SQLALCHEMY_DATABASE_URL = "sqlite:///./recettes.db"
+os.makedirs("data", exist_ok=True)
+
+SQLALCHEMY_DATABASE_URL = "sqlite:///./data/recettes.db"
 
 engine = create_engine(
     SQLALCHEMY_DATABASE_URL, connect_args={"check_same_thread": False}
