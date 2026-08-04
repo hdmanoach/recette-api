@@ -56,6 +56,7 @@ ruff check .
 ```
 
 ## Structure du projet
+```bash
 
 recette-api/
 ├── main.py # Points d'entrée de l'API (endpoints)
@@ -65,6 +66,7 @@ recette-api/
 ├── requirements.txt # Dépendances Python
 ├── pyproject.toml # Configuration de Ruff
 └── .github/workflows/ci.yml # Pipeline CI/CD
+```
 
 ## Auteur
 
