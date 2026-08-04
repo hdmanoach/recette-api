@@ -33,6 +33,8 @@ def create_recipe(recipe: Recipe, db: Session = Depends(get_db)):
     db.commit()
     db.refresh(db_recipe)
     return db_recipe
+
+
 @app.post("/recipes/bulk")
 def create_recipes(new_recipes: list[Recipe], db: Session = Depends(get_db)):
     db_recipes = []
@@ -51,9 +53,34 @@ def create_recipes(new_recipes: list[Recipe], db: Session = Depends(get_db)):
     return db_recipes
 
 @app.get("/recipes")
-def get_recipes(db: Session = Depends(get_db)):
-    recipes = db.query(RecipeDB).all()
-    return {"recipes": recipes}
+def get_recipes(
+    skip: int = 0,
+    limit: int = 10,
+    title: str | None = None,
+    max_prep_time: int | None = None,
+    ingredient: str | None = None,
+    db: Session = Depends(get_db),
+):
+    query = db.query(RecipeDB)
+
+    if title:
+        query = query.filter(RecipeDB.title.ilike(f"%{title}%"))
+
+    if max_prep_time:
+        query = query.filter(RecipeDB.prep_time <= max_prep_time)
+
+    results = query.all()
+
+    if ingredient:
+        results = [
+            r for r in results
+            if any(ingredient.lower() in i.lower() for i in r.ingredients)
+        ]
+
+    results = results[skip: skip + limit]
+
+    return {"recipes": results}
+
 
 @app.get("/recipes/{recipe_id}")
 def get_recipe(recipe_id: int, db: Session = Depends(get_db)):
