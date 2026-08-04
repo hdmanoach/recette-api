@@ -4,9 +4,10 @@ connect_args={"check_same_thread": False} → spécifique à SQLite, nécessaire
 SessionLocal → une "usine" à sessions — chaque requête API va ouvrir sa propre session pour parler à la base
 Base → la classe dont hériteront tes futurs modèles de table (RecipeDB)
 """
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker, declarative_base
 import os
+
+from sqlalchemy import create_engine
+from sqlalchemy.orm import declarative_base, sessionmaker
 
 os.makedirs("data", exist_ok=True)
 
