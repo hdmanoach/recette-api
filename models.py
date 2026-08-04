@@ -16,11 +16,18 @@ Règles qu'on va ajouter
     ingredients → doit contenir au moins 1 élément
     instructions → doit contenir au moins 1 élément
 """
+from datetime import datetime, timedelta, timezone
+
+from jose import jwt
+from passlib.context import CryptContext
 from pydantic import BaseModel, Field
-from sqlalchemy import JSON, Column, Integer, String
+from sqlalchemy import JSON, Column, DateTime, ForeignKey, Integer, String
 
 from database import Base
 
+SECRET_KEY = "change-moi-en-production-avec-une-vraie-cle-secrete"
+ALGORITHM = "HS256"
+ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
 class Recipe(BaseModel):
     id: int
@@ -46,3 +53,70 @@ class RecipeDB(Base):
     instructions = Column(JSON, nullable=False)
     prep_time = Column(Integer, nullable=False)
     servings = Column(Integer, nullable=False)
+    owner_id = Column(Integer, ForeignKey("users.id"))
+
+"""
+    Explication
+    pwd_context → l'outil qui va hasher/vérifier les mots de passe avec l'algorithme bcrypt
+    UserDB → la table SQL réelle. username est unique=True → impossible d'avoir deux comptes avec le même nom
+    UserCreate → ce que le client envoie pour s'inscrire (nom d'utilisateur + mot de passe en clair, qu'on va hasher avant de stocker)
+    UserLogin → ce que le client envoie pour se connecter
+    UserOut → ce qu'on renvoie au client — remarque qu'il n'y a pas de mot de passe ici, jamais ! On ne renvoie jamais le hash, même, par sécurité
+    from_attributes = True → permet à Pydantic de lire directement un objet SQLAlchemy (comme UserDB) pour le convertir en UserOut
+"""
+pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+
+def create_access_token(data: dict) -> str:
+    to_encode = data.copy()
+    expire = datetime.now(timezone.utc) + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+    to_encode.update({"exp": expire})
+    return jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
+
+def hash_password(password: str) -> str:
+    return pwd_context.hash(password)
+
+
+def verify_password(plain_password: str, hashed_password: str) -> bool:
+    return pwd_context.verify(plain_password, hashed_password)
+
+
+class UserDB(Base):
+    __tablename__ = "users"
+
+    id = Column(Integer, primary_key=True, index=True)
+    username = Column(String, unique=True, index=True, nullable=False)
+    hashed_password = Column(String, nullable=False)
+
+
+class UserCreate(BaseModel):
+    username: str = Field(..., min_length=3)
+    password: str = Field(..., min_length=6)
+
+
+class UserLogin(BaseModel):
+    username: str
+    password: str
+
+
+from pydantic import (  # ajoute ConfigDict à l'import existant
+    BaseModel,
+    ConfigDict,
+    Field,
+)
+
+
+class UserOut(BaseModel):
+    id: int
+    username: str
+
+    model_config = ConfigDict(from_attributes=True)
+class LogEntry(Base):
+    __tablename__ = "logs"
+
+    id = Column(Integer, primary_key=True, index=True)
+    timestamp = Column(DateTime, default=lambda: datetime.now(timezone.utc))
+    method = Column(String)
+    path = Column(String)
+    status_code = Column(Integer)
+    username = Column(String, nullable=True)
+    ip_address = Column(String, nullable=True)
