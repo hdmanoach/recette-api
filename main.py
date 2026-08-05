@@ -6,7 +6,6 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from database import Base, engine
 from middleware import LoggingMiddleware
-from models import LogEntry, RecipeDB, UserDB  # Import explicite pour enregistrer TOUTES les tables
 from routers import auth, logs, recipes
 
 # Charger les variables du fichier .env

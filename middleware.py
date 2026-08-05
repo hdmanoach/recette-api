@@ -1,7 +1,8 @@
-import traceback
 import sys
+import traceback
 
 from jose import JWTError, jwt
+from sqlalchemy.exc import SQLAlchemyError
 from starlette.middleware.base import BaseHTTPMiddleware
 
 from database import SessionLocal
@@ -37,7 +38,7 @@ class LoggingMiddleware(BaseHTTPMiddleware):
                 db.commit()
             finally:
                 db.close()
-        except Exception:
+        except SQLAlchemyError:
             # Ne pas crasher la requête si le logging échoue
             # (ex: table 'logs' pas encore créée sur PostgreSQL)
             print("[LoggingMiddleware] Erreur de logging :", file=sys.stderr)
