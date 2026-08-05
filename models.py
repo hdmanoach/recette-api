@@ -34,7 +34,7 @@ ALGORITHM = os.getenv("ALGORITHM", "HS256")
 ACCESS_TOKEN_EXPIRE_MINUTES = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", "30"))
 
 class Recipe(BaseModel):
-    id: int
+    id: int | None = None
     title: str = Field(..., min_length=1)
     ingredients: list[str] = Field(..., min_length=1)
     instructions: list[str] = Field(..., min_length=1)
@@ -50,8 +50,8 @@ class Recipe(BaseModel):
 
 class RecipeDB(Base):
     __tablename__ = "recipes"
-
-    id = Column(Integer, primary_key=True, index=True)
+    
+    id = Column(Integer, primary_key=True, index=True, autoincrement=True)
     title = Column(String, nullable=False)
     ingredients = Column(JSON, nullable=False)
     instructions = Column(JSON, nullable=False)

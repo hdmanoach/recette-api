@@ -42,7 +42,6 @@ def create_recipes(
     db_recipes = []
     for recipe in new_recipes:
         db_recipe = RecipeDB(
-            id=recipe.id,
             title=recipe.title,
             ingredients=recipe.ingredients,
             instructions=recipe.instructions,
@@ -71,7 +70,6 @@ def create_recipe(
     current_user: UserDB = Depends(get_current_user),
 ):
     db_recipe = RecipeDB(
-        id=recipe.id,
         title=recipe.title,
         ingredients=recipe.ingredients,
         instructions=recipe.instructions,
@@ -83,7 +81,6 @@ def create_recipe(
     db.commit()
     db.refresh(db_recipe)
     return db_recipe
-
 
 @router.delete("/recipes/{recipe_id}")
 def delete_recipe(
