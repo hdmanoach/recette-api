@@ -52,6 +52,7 @@ def bienvenue():
 def health_check():
     """Endpoint de santé — utilisé par le cron job pour garder Supabase actif."""
     from sqlalchemy import text
+    from sqlalchemy.exc import SQLAlchemyError
 
     from database import SessionLocal
 
@@ -59,7 +60,7 @@ def health_check():
     try:
         db.execute(text("SELECT 1"))
         return {"status": "ok", "database": "connected"}
-    except Exception:
+    except SQLAlchemyError:
         return {"status": "error", "database": "disconnected"}
     finally:
         db.close()
