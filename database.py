@@ -6,16 +6,24 @@ Base → la classe dont hériteront tes futurs modèles de table (RecipeDB)
 """
 import os
 
+from dotenv import load_dotenv
 from sqlalchemy import create_engine
 from sqlalchemy.orm import declarative_base, sessionmaker
 
-os.makedirs("data", exist_ok=True)
+load_dotenv()
 
-SQLALCHEMY_DATABASE_URL = "sqlite:///./data/recettes.db"
+DATABASE_URL = os.getenv("DATABASE_URL")
 
-engine = create_engine(
-    SQLALCHEMY_DATABASE_URL, connect_args={"check_same_thread": False}
-)
+if DATABASE_URL:
+    # Render fournit parfois une URL commençant par "postgres://",
+    # mais SQLAlchemy exige "postgresql://"
+    if DATABASE_URL.startswith("postgres://"):
+        DATABASE_URL = DATABASE_URL.replace("postgres://", "postgresql://", 1)
+    engine = create_engine(DATABASE_URL)
+else:
+    os.makedirs("data", exist_ok=True)
+    DATABASE_URL = "sqlite:///./data/recettes.db"
+    engine = create_engine(DATABASE_URL, connect_args={"check_same_thread": False})
 
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
