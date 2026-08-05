@@ -8,7 +8,7 @@ Une API REST pour gérer des recettes de cuisine, construite avec FastAPI.
 
 🔗 **Frontend associé** : https://recette-frontend-five.vercel.app ([code source](https://github.com/hdmanoach/recette-frontend))
 
-⚠️ Le plan gratuit Render utilisé pour PostgreSQL expire courant septembre 2026 — la base pourra être recréée si besoin.
+💾 **Base de données** : Supabase PostgreSQL (gratuit, permanent) — maintenue active par un cron job sur `/health`.
 
 ## Fonctionnalités
 
@@ -19,7 +19,8 @@ Une API REST pour gérer des recettes de cuisine, construite avec FastAPI.
 - Journalisation de toutes les requêtes en base, consultable via `/logs`
 - Validation avancée des données (Pydantic)
 - Pagination et filtres (titre, ingrédient, temps de préparation)
-- Base de données persistante : PostgreSQL en production, SQLite en local
+- Base de données persistante : Supabase PostgreSQL en production, SQLite en local
+- Endpoint `/health` pour vérifier la connexion DB et garder Supabase actif (cron job)
 - Tests automatisés et isolés (Pytest)
 - Linting automatique (Ruff)
 - Conteneurisation (Docker)
@@ -42,6 +43,8 @@ SECRET_KEY=une-cle-secrete-generee-aleatoirement
 ALGORITHM=HS256
 ACCESS_TOKEN_EXPIRE_MINUTES=30
 CORS_ORIGINS=http://localhost:3000
+# Optionnel — si absent, SQLite est utilisé automatiquement
+# DATABASE_URL=postgresql://user:password@host:port/dbname
 ```
 Génère une clé secrète avec :
 ```bash
@@ -62,6 +65,7 @@ Documentation interactive (Swagger) : `http://127.0.0.1:8000/docs`
 | Méthode | Route                | Auth requise | Description                        |
 |---------|-----------------------|:---:|-------------------------------------|
 | GET     | `/`                    |  | Message de bienvenue                |
+| GET     | `/health`              |  | Vérification santé + ping DB (cron) |
 | POST    | `/register`            |  | Créer un compte utilisateur         |
 | POST    | `/login`               |  | Se connecter, obtenir un token JWT  |
 | GET     | `/recipes`             |  | Lister les recettes (filtres, pagination) |
@@ -107,7 +111,28 @@ recette-api/
 ├── requirements.txt
 ├── pyproject.toml # Configuration de Ruff
 ├── Dockerfile
-└── .github/workflows/ci.yml # Pipeline CI/CD 
+└── .github/workflows/ci.yml # Pipeline CI/CD
+```
+
+## Déploiement en production
+
+### Architecture
+```
+Vercel (frontend) → Render (API FastAPI) → Supabase (PostgreSQL)
+                                         ↑
+                              cron-job.org (ping /health toutes les 72h)
+```
+
+### Variables d'environnement sur Render
+| Variable | Valeur |
+|---|---|
+| `DATABASE_URL` | URI **pooler** Supabase (port `6543`, pas `5432`) |
+| `SECRET_KEY` | Clé secrète JWT |
+| `ALGORITHM` | `HS256` |
+| `ACCESS_TOKEN_EXPIRE_MINUTES` | `30` |
+| `CORS_ORIGINS` | `http://localhost:3000,https://recette-frontend-five.vercel.app` |
+
+> ⚠️ **Important** : utiliser l'URI **Connection Pooling (Session)** de Supabase, pas la connexion directe. Render free ne supporte pas IPv6, et la connexion directe Supabase résout en IPv6.
 ```
 ## Auteur
 
