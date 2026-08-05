@@ -24,10 +24,15 @@ from pydantic import BaseModel, Field
 from sqlalchemy import JSON, Column, DateTime, ForeignKey, Integer, String
 
 from database import Base
+import os
 
-SECRET_KEY = "change-moi-en-production-avec-une-vraie-cle-secrete"
-ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = 30
+from dotenv import load_dotenv
+
+load_dotenv()
+
+SECRET_KEY = os.getenv("SECRET_KEY")
+ALGORITHM = os.getenv("ALGORITHM", "HS256")
+ACCESS_TOKEN_EXPIRE_MINUTES = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", "30"))
 
 class Recipe(BaseModel):
     id: int
