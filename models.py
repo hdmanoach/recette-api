@@ -16,17 +16,16 @@ Règles qu'on va ajouter
     ingredients → doit contenir au moins 1 élément
     instructions → doit contenir au moins 1 élément
 """
+import os
 from datetime import datetime, timedelta, timezone
 
+from dotenv import load_dotenv
 from jose import jwt
 from passlib.context import CryptContext
 from pydantic import BaseModel, Field
 from sqlalchemy import JSON, Column, DateTime, ForeignKey, Integer, String
 
 from database import Base
-import os
-
-from dotenv import load_dotenv
 
 load_dotenv()
 
