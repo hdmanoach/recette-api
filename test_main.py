@@ -93,7 +93,7 @@ def test_get_recipes(client):
     # Grâce à l'isolation, cette base de données est vide (0 recette)
     response = client.get("/recipes")
     assert response.status_code == 200
-    assert response.json() == {"recipes": []}
+    assert response.json() == {"recipes": [], "total": 0}
 
 
 def test_get_recipe(client):

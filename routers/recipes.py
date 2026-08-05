@@ -30,7 +30,7 @@ def get_recipes(
             if any(ingredient.lower() in i.lower() for i in r.ingredients)
         ]
 
-    return {"recipes": results[skip: skip + limit]}
+    return {"recipes": results[skip: skip + limit], "total": len(results)}
 
 
 @router.post("/recipes/bulk")
