@@ -19,7 +19,10 @@ if DATABASE_URL:
     # mais SQLAlchemy exige "postgresql://"
     if DATABASE_URL.startswith("postgres://"):
         DATABASE_URL = DATABASE_URL.replace("postgres://", "postgresql://", 1)
-    engine = create_engine(DATABASE_URL)
+    # pool_pre_ping=True → vérifie que la connexion est vivante avant chaque requête
+    # (important sur Render où les instances free dorment et les connexions expirent)
+    engine = create_engine(DATABASE_URL, pool_pre_ping=True)
+    print(f"[database] Connexion PostgreSQL : {DATABASE_URL[:40]}...")
 else:
     os.makedirs("data", exist_ok=True)
     DATABASE_URL = "sqlite:///./data/recettes.db"

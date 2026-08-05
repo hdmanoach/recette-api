@@ -6,6 +6,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from database import Base, engine
 from middleware import LoggingMiddleware
+from models import LogEntry, RecipeDB, UserDB  # Import explicite pour enregistrer TOUTES les tables
 from routers import auth, logs, recipes
 
 # Charger les variables du fichier .env
@@ -13,7 +14,10 @@ load_dotenv()
 
 app = FastAPI()
 
+# Créer toutes les tables dans la base PostgreSQL (ou SQLite en local)
+print(f"[startup] Tables enregistrées : {list(Base.metadata.tables.keys())}")
 Base.metadata.create_all(bind=engine)
+print("[startup] create_all terminé avec succès")
 
 # Récupérer la chaîne du .env et la transformer en liste Python
 cors_origins_raw = os.getenv(
@@ -22,6 +26,11 @@ cors_origins_raw = os.getenv(
 )
 origins = [origin.strip() for origin in cors_origins_raw.split(",")]
 
+# IMPORTANT : l'ordre compte ! Starlette exécute les middlewares en LIFO.
+# LoggingMiddleware est ajouté en premier → il s'exécute en dernier (à l'intérieur).
+# CORSMiddleware est ajouté en dernier → il s'exécute en premier (à l'extérieur).
+# Ainsi, les headers CORS sont TOUJOURS présents, même si le logging crashe.
+app.add_middleware(LoggingMiddleware)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,  # Utilise la liste dynamique issue du .env
@@ -29,7 +38,6 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-app.add_middleware(LoggingMiddleware)
 
 app.include_router(auth.router)
 app.include_router(recipes.router)
