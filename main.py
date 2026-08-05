@@ -46,3 +46,20 @@ app.include_router(logs.router)
 @app.get("/")
 def bienvenue():
     return {"message": "Bienvenue dans l'API Recettes"}
+
+
+@app.get("/health")
+def health_check():
+    """Endpoint de santé — utilisé par le cron job pour garder Supabase actif."""
+    from sqlalchemy import text
+
+    from database import SessionLocal
+
+    db = SessionLocal()
+    try:
+        db.execute(text("SELECT 1"))
+        return {"status": "ok", "database": "connected"}
+    except Exception:
+        return {"status": "error", "database": "disconnected"}
+    finally:
+        db.close()
