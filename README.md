@@ -131,7 +131,7 @@ Vercel (frontend) → Render (API FastAPI) → Supabase (PostgreSQL)
 | `ALGORITHM` | `HS256` |
 | `ACCESS_TOKEN_EXPIRE_MINUTES` | `30` |
 | `CORS_ORIGINS` | `http://localhost:3000,https://recette-frontend-five.vercel.app` |
-
+```
 > ⚠️ **Important** : utiliser l'URI **Connection Pooling (Session)** de Supabase, pas la connexion directe. Render free ne supporte pas IPv6, et la connexion directe Supabase résout en IPv6.
 ```
 ## Auteur
