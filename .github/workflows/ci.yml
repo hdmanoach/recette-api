@@ -24,6 +24,8 @@ jobs:
         run: |
           ruff check .
       - name: Lancer les tests
+        env:
+          SECRET_KEY: ${{ secrets.SECRET_KEY }}
         run: |
           pytest
 
