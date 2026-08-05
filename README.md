@@ -134,6 +134,16 @@ Vercel (frontend) → Render (API FastAPI) → Supabase (PostgreSQL)
 ```
 > ⚠️ **Important** : utiliser l'URI **Connection Pooling (Session)** de Supabase, pas la connexion directe. Render free ne supporte pas IPv6, et la connexion directe Supabase résout en IPv6.
 ```
+## Pistes d'amélioration
+
+- **Rôles utilisateurs** : introduire un rôle administrateur avec des droits élargis (accès aux logs de tous les utilisateurs, modération)
+- **Rafraîchissement de jeton** : ajouter un mécanisme de *refresh token* pour prolonger une session sans nouvelle connexion complète
+- **Catégorisation des recettes** : ajout d'un champ catégorie (entrée, plat, dessert) avec filtre dédié
+- **Upload d'images** : associer une photo à chaque recette, avec stockage externe (S3 ou équivalent)
+- **Tests frontend** : ajouter des tests automatisés côté interface (Jest, Testing Library, ou Playwright pour des tests de bout en bout)
+- **Observabilité renforcée** : export des journaux vers un service dédié plutôt qu'un stockage en base applicative
+- **Cookies httpOnly** : remplacer le stockage du jeton en `localStorage` par des cookies sécurisés, plus robustes face aux attaques de type XSS
+
 ## Auteur
 
 **Manoach HOSSOU DODO** — [LinkedIn](https://www.linkedin.com/in/hdmanoach/)
